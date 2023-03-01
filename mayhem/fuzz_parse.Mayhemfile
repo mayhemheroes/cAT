@@ -1,0 +1,6 @@
+project: cAT
+target: fuzz_parse
+
+cmds:
+  - cmd: /fuzz_binaries/fuzz_parse
+    libfuzzer: true
