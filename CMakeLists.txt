@@ -6,6 +6,8 @@ set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
+option(BUILD_FUZZ_TARGETS "Build fuzz targets" OFF)
+
 add_compile_options("$<$<CONFIG:DEBUG>:-g>")
 
 enable_testing( )
@@ -30,6 +32,12 @@ target_link_libraries( basic cat )
 add_executable( unsolicited example/unsolicited.c )
 # target_compile_options(unsolicited PRIVATE -g)
 target_link_libraries( unsolicited cat )
+
+if (BUILD_FUZZ_TARGETS)
+    add_executable( fuzz_parse fuzz/fuzz_parse.c src/cat.c )
+    target_compile_options( fuzz_parse PRIVATE -fsanitize=fuzzer,address,undefined )
+    target_link_options( fuzz_parse PRIVATE -fsanitize=fuzzer,address,undefined )
+endif()
 
 add_executable( test_parse tests/test_parse.c )
 target_link_libraries( test_parse cat )
